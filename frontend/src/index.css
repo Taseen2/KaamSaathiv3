@@ -1,0 +1,467 @@
+:root {
+  /* ==========================================================================
+     KaamSaathi Cooperative Design Tokens & Ledger System
+     Aesthetic: Institutional Trust, Cooperative Bank Passbook, Ration Card, Trade Union
+     ========================================================================== */
+
+  /* Typography */
+  --font-heading: 'PT Serif', 'IBM Plex Sans Devanagari', Georgia, serif;
+  --font-body: 'IBM Plex Sans', 'IBM Plex Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+  /* Official Cooperative Color Palette */
+  --primary: #1C3D2E;             /* Deep cooperative green (institutional) */
+  --primary-hover: #142E23;
+  --primary-light: #2A5441;
+  --primary-surface: #E8EFEA;
+
+  --bg-main: #F5F0E1;             /* Warm paper/khadi off-white */
+  --bg-secondary: #EBE4D2;        /* Aged paper tone / register column */
+  --bg-subtle: #F0ECE0;
+
+  --surface: #FAF7F0;             /* Crisp document paper surface */
+  --surface-card: #FFFFFF;        /* Clean index-card white */
+  --surface-hover: #F6F2E8;
+  --surface-muted: #EFE9DB;
+
+  --text-primary: #2A2A28;        /* Near-black ink (body & headlines) */
+  --text-secondary: #4A4D4A;      /* Charcoal secondary ink */
+  --text-muted: #6C7A6D;          /* Muted sage grey-green text */
+  --text-inverse: #FAF7F0;
+
+  --border: #8B9A8C;              /* Sage grey-green hairline border */
+  --border-light: rgba(139, 154, 140, 0.4);
+  --border-strong: #1C3D2E;
+  --border-dashed: dashed #8B9A8C;
+
+  --accent: #AF5F18;              /* Tool-belt rust orange (WCAG AA 4.69:1 verified against white text) */
+  --accent-hover: #8F4B0E;
+  --accent-surface: #FBF0E6;
+
+  --seal-gold: #D4AF37;           /* Muted brass/seal gold (trust marks & certification seals ONLY) */
+  --seal-gold-bg: rgba(212, 175, 55, 0.12);
+  --seal-gold-border: #C19A26;
+
+  --sos-red: #B91C1C;             /* Saturated red (strictly reserved for 24/7 emergency SOS) */
+  --sos-red-hover: #991B1B;
+  --sos-red-bg: #FEF2F2;
+  --sos-red-border: #DC2626;
+
+  /* Minimal Radius (2-4px max) — Square index card feel, NO rounded pills */
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --radius-full: 4px;             /* Enforce no round pills even if full radius is referenced */
+
+  /* Hairline ink edges — No drop shadows or neon glows */
+  --shadow-none: none;
+  --shadow-subtle: 0 1px 2px rgba(42, 42, 40, 0.05);
+  --shadow-card: 0 1px 3px rgba(42, 42, 40, 0.08);
+  --shadow-elevated: 0 4px 12px rgba(42, 42, 40, 0.12);
+
+  /* Layout Standards */
+  --max-width: 1280px;
+}
+
+/* Base Document Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Document & Ledger Headline Typography (Sturdy Serif for H1 & H2) */
+h1, h2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* UI Card Headings and Sub-headers remain in crisp, readable Sans-Serif */
+h3, h4, h5, h6 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--primary);
+}
+
+h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: var(--primary);
+}
+
+h3 {
+  font-size: 1.15rem;
+}
+
+/* Absolute rule: Solid ink color only, NO gradient fills on type ever */
+.text-gradient,
+.text-gradient-accent {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: initial !important;
+  color: var(--primary) !important;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+input, select, textarea {
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background-color: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+
+/* Container */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ==========================================================================
+   Buttons (Civic & Cooperative Action Standards)
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.65rem 1.2rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+
+/* Primary Institutional Button (Cooperative Green) */
+.btn-primary {
+  background-color: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-primary:active {
+  background-color: #0E2018;
+}
+
+/* Accent Primary Action Button (Tool-belt Rust Orange) — RESERVED FOR BOOK NOW */
+.btn-accent {
+  background-color: var(--accent);
+  color: #FFFFFF;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+/* Hairline Outline Button */
+.btn-outline {
+  background-color: transparent;
+  color: var(--primary);
+  border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--primary);
+}
+
+/* Strict SOS Button (Only place saturated red is allowed) */
+.btn-sos,
+.btn-emergency {
+  background-color: var(--sos-red) !important;
+  color: #FFFFFF !important;
+  border: 2px solid #7F1D1D !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  box-shadow: none !important;
+}
+
+.btn-sos:hover,
+.btn-emergency:hover {
+  background-color: var(--sos-red-hover) !important;
+  border-color: #581C1C !important;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+  border-radius: var(--radius-xs);
+}
+
+.btn-lg {
+  padding: 0.85rem 1.6rem;
+  font-size: 1rem;
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================================
+   Cards (Index Cards, Hairline Borders, No Drop Shadows)
+   ========================================================================== */
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem;
+  position: relative;
+  box-shadow: var(--shadow-subtle);
+}
+
+.card-hover:hover {
+  border-color: var(--primary);
+  background-color: #FFFFFF;
+}
+
+.card-passbook {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--primary);
+}
+
+.card-index {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 1.25rem;
+}
+
+/* ==========================================================================
+   Seals & Trust Marks (Official Motifs — NOT Generic Pill Badges)
+   ========================================================================== */
+.seal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Official Government Recognition Stamped Seal */
+.seal-govt {
+  background-color: var(--primary-surface);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+/* Certification / Verification Seal in Muted Brass Gold */
+.seal-certified {
+  background-color: var(--seal-gold-bg);
+  color: #7D6315;
+  border: 1px solid var(--seal-gold-border);
+}
+
+/* Official Rubber Stamp Motif */
+.stamp-official {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border: 2px dashed var(--primary);
+  border-radius: var(--radius-xs);
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(28, 61, 46, 0.05);
+}
+
+.stamp-gold {
+  border: 2px dashed var(--seal-gold-border);
+  color: #8C6F19;
+  background: rgba(212, 175, 55, 0.08);
+}
+
+/* General badge overrides to eliminate rounded pills */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-xs) !important;
+  font-size: 0.76rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+
+.badge-verified {
+  background-color: var(--primary-surface);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.badge-nsdc {
+  background-color: var(--seal-gold-bg);
+  color: #8C6F19;
+  border-color: var(--seal-gold-border);
+}
+
+.badge-emergency {
+  background-color: var(--sos-red-bg);
+  color: var(--sos-red);
+  border-color: var(--sos-red-border);
+}
+
+.badge-pending {
+  background-color: #FEF3C7;
+  color: #92400E;
+  border-color: #D97706;
+}
+
+/* ==========================================================================
+   Passbook Ledger Lines & Civic Tables
+   ========================================================================== */
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+}
+
+.ledger-table th {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--primary);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+}
+
+.ledger-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+
+.ledger-table tr:nth-child(even) {
+  background: var(--surface);
+}
+
+.ledger-rule {
+  border: none;
+  border-top: 1px solid var(--border-light);
+  margin: 1.5rem 0;
+}
+
+.ledger-rule-strong {
+  border: none;
+  border-top: 2px solid var(--primary);
+  margin: 1.5rem 0;
+}
+
+/* ==========================================================================
+   Modals
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(42, 42, 40, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: var(--surface-card);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-sm);
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(42, 42, 40, 0.2);
+  position: relative;
+}
+
+/* Leaflet Map Customizations */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-family: var(--font-body) !important;
+  z-index: 10;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #FFFFFF !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-xs) !important;
+  box-shadow: var(--shadow-subtle) !important;
+}
+
+.leaflet-popup-tip {
+  background: #FFFFFF !important;
+}
