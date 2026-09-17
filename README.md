@@ -18,21 +18,25 @@
 
 ---
 
-## Recommended Tech Stack
+## Technology Stack (Current vs Planned)
 
-| Layer                     | Choice                                                       | Why                                                                                                                                           |
-| ------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Frontend**              | React (Vite) + Bootstrap/Tailwind                            | Builds directly on existing HTML/CSS/JS knowledge; fast to get a working UI.                                                                  |
-| **Backend**               | Node.js + Express                                            | Same language as frontend (JS) — no context switching for beginners.                                                                          |
-| **Database**              | PostgreSQL (via Supabase free tier)                          | Relational structure fits the platform's data (workers, bookings, payments, ratings) naturally; Supabase's free tier also includes free auth. |
-| **Auth**                  | JWT + bcrypt (or Firebase Auth)                              | JWT is a good learning exercise; Firebase Auth is faster if time is short.                                                                    |
-| **Maps / Geo-matching**   | Leaflet.js + OpenStreetMap                                   | Fully free, no billing account needed (unlike Google Maps).                                                                                   |
-| **Payments**              | Razorpay (Test/Sandbox mode)                                 | Free for testing; standard choice for Indian projects; good documentation.                                                                    |
-| **OTP / Notifications**   | Email OTP via Nodemailer (Gmail SMTP)                        | Free alternative to paid SMS gateways; demonstrates the same flow.                                                                            |
-| **AI Demand Forecasting** | Python + scikit-learn microservice (Flask/FastAPI)           | A simple regression/time-series model is enough to credibly demonstrate AI forecasting.                                                       |
-| **Multilingual**          | i18next (React)                                              | Standard, free, well-documented for English/Hindi/regional toggle.                                                                            |
-| **Hosting**               | Vercel/Netlify (frontend) + Render (backend) + Supabase (DB) | Zero cost; simple git-push deployment.                                                                                                        |
-| **Version Control**       | GitHub                                                       | Collaboration + a documentation trail for the project report.                                                                                 |
+| Layer | Currently Implemented | Planned in Architecture | Notes / Status |
+| :--- | :--- | :--- | :--- |
+| **Frontend Framework** | **React 19** + **Vite 8** + **TypeScript** | React (Vite) + TypeScript | **Active & running** on `http://localhost:5173/` |
+| **Styling & Design** | **Pure Vanilla CSS** (Design system with CSS variables in `frontend/src/index.css`) | CSS / Bootstrap / Tailwind | Strict institutional cooperative design system; no Tailwind |
+| **Icons & Media** | **Lucide-react 1.47**, Canvas Confetti | Lucide icons | Official stamps, badge seals, icons |
+| **Maps & Geolocation** | **Leaflet.js 1.9** + OpenStreetMap + Canvas markers | Leaflet + OpenStreetMap | Free, open-source geo-matching without billing accounts |
+| **Typography** | **Google Fonts** (`PT Serif`, `IBM Plex Sans`, `IBM Plex Sans Devanagari`, `IBM Plex Mono`) | Google Fonts | Civic gazette aesthetic |
+| **State Management** | **React Context API** (`AppContext.tsx`) with `localStorage` persistence | Context API + REST APIs | Full mock state & reactive workflow |
+| **Internationalization** | Custom **Bilingual Engine** (`translations.ts` in EN / हिन्दी) | i18next | Instant Hindi / English toggle |
+| **Backend Server** | *Scaffolded folders only* (`.gitkeep`) | **Node.js** + **Express** | Ready to be initialized |
+| **Database** | *Mock Data Store* (`initialData.ts` + `localStorage`) | **PostgreSQL** (via Supabase) | DB schema and connection to be built |
+| **Auth** | Mock Role Switcher (Customer, Worker, Admin) | **JWT + bcrypt** (or Firebase Auth) | Secure token-based auth to be implemented |
+| **AI / ML Service** | *Scaffolded folders only* (`.gitkeep`) | **Python** (FastAPI/Flask + scikit-learn) | AI demand forecasting microservice to be developed |
+| **Payments** | Simulated cooperative wage breakdown & mock checkout | **Razorpay** (Test/Sandbox mode) | Free test mode for testing Indian payment rails |
+| **OTP / Notifications** | Simulated 4-digit service start OTP & dispatch bell | **Email OTP via Nodemailer** (Gmail SMTP) | Free alternative for verification & booking alerts |
+| **Hosting** | Local development (Vite dev server) | **Vercel/Netlify** (frontend) + **Render** (backend) + **Supabase** (DB) | Zero cost cloud deployment |
+| **Version Control** | **Git** + **GitHub** | Git + GitHub | Team collaboration and version tracking |
 
 ---
 
