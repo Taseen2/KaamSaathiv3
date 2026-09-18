@@ -9,7 +9,8 @@ import {
   AIInsight, 
   CooperativeStats,
   NotificationItem,
-  PricingBreakdown
+  PricingBreakdown,
+  BookingStatus
 } from '../types';
 import { initialCategories, initialWorkers, initialBookings, initialAIInsights, initialStats } from '../data/initialData';
 import { translations } from '../i18n/translations';
@@ -25,7 +26,12 @@ interface AppContextType {
   aiInsights: AIInsight[];
   notifications: NotificationItem[];
   unreadCount: number;
+  pendingKycCount: number;
+  isAuthenticated: boolean;
+  isGuest: boolean;
   // Methods
+  login: (role: UserRole, userDetails?: Partial<User>) => void;
+  logout: () => void;
   switchRole: (role: UserRole) => void;
   setLanguage: (lang: Language) => void;
   createBooking: (bookingData: {
@@ -39,6 +45,8 @@ interface AppContextType {
     isEmergency?: boolean;
   }) => Booking;
   acceptBooking: (bookingId: string) => void;
+  advanceJobToEnRoute: (bookingId: string) => void;
+  updateBookingStatus: (bookingId: string, status: BookingStatus) => void;
   startJob: (bookingId: string, otp: string) => { success: boolean; message: string };
   completeJob: (bookingId: string) => void;
   cancelBooking: (bookingId: string) => void;
@@ -63,9 +71,22 @@ const defaultUser: User = {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Read initial from localStorage or fall back
+  // Read initial auth state from localStorage
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem('ks_is_auth') === 'true';
+  });
+
+  const [isGuest, setIsGuest] = useState<boolean>(() => {
+    return localStorage.getItem('ks_is_guest') === 'true';
+  });
+
   const [role, setRole] = useState<UserRole>(() => {
     return (localStorage.getItem('ks_role') as UserRole) || 'customer';
+  });
+
+  const [customUser, setCustomUser] = useState<Partial<User> | null>(() => {
+    const saved = localStorage.getItem('ks_custom_user');
+    return saved ? JSON.parse(saved) : null;
   });
 
   const [language, setLanguageState] = useState<Language>(() => {
@@ -108,15 +129,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   ]);
 
-  // Derived user according to current role
+  // Derived user according to current role & auth session
   const user: User = React.useMemo(() => {
-    if (role === 'worker') {
+    if (role === 'guest') {
+      return {
+        id: 'usr-guest',
+        name: 'Guest Citizen',
+        email: 'guest@kaamsaathi.org',
+        phone: '',
+        role: 'guest',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
+        address: 'Delhi NCR Sector',
+        city: 'New Delhi'
+      };
+    } else if (role === 'worker') {
       const activeWorker = workers[0]; // Ramesh Kumar Verma
       return {
         id: activeWorker.id,
-        name: activeWorker.name,
-        email: activeWorker.email,
-        phone: activeWorker.phone,
+        name: customUser?.name || activeWorker.name,
+        email: customUser?.email || activeWorker.email,
+        phone: customUser?.phone || activeWorker.phone,
         role: 'worker',
         avatar: activeWorker.avatar,
         address: activeWorker.address,
@@ -125,17 +157,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } else if (role === 'admin') {
       return {
         id: 'usr-admin-1',
-        name: 'Dr. Savita Deshmukh',
-        email: 'savita.admin@shramikcoop.org',
-        phone: '+91 99990 00111',
+        name: customUser?.name || 'Dr. Savita Deshmukh',
+        email: customUser?.email || 'savita.admin@shramikcoop.org',
+        phone: customUser?.phone || '+91 99990 00111',
         role: 'admin',
         avatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150&auto=format&fit=crop&q=80',
         address: 'Cooperative Federation Headquarters, New Delhi',
         city: 'New Delhi'
       };
     }
-    return defaultUser;
-  }, [role, workers]);
+    return {
+      ...defaultUser,
+      name: customUser?.name || defaultUser.name,
+      email: customUser?.email || defaultUser.email,
+      phone: customUser?.phone || defaultUser.phone
+    };
+  }, [role, workers, customUser]);
 
   // Sync state to localStorage
   useEffect(() => {
@@ -157,6 +194,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem('ks_stats', JSON.stringify(stats));
   }, [stats]);
+
+  const login = (newRole: UserRole, userDetails?: Partial<User>) => {
+    setRole(newRole);
+    if (newRole === 'guest') {
+      setIsGuest(true);
+      setIsAuthenticated(false);
+      localStorage.setItem('ks_is_guest', 'true');
+      localStorage.removeItem('ks_is_auth');
+    } else {
+      setIsAuthenticated(true);
+      setIsGuest(false);
+      localStorage.setItem('ks_is_auth', 'true');
+      localStorage.removeItem('ks_is_guest');
+    }
+    if (userDetails) {
+      setCustomUser(userDetails);
+      localStorage.setItem('ks_custom_user', JSON.stringify(userDetails));
+    }
+    localStorage.setItem('ks_role', newRole);
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    setIsGuest(false);
+    setCustomUser(null);
+    localStorage.removeItem('ks_is_auth');
+    localStorage.removeItem('ks_is_guest');
+    localStorage.removeItem('ks_custom_user');
+  };
 
   const switchRole = (newRole: UserRole) => {
     setRole(newRole);
@@ -290,6 +356,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       },
       ...prev
     ]);
+  };
+
+  const advanceJobToEnRoute = (bookingId: string) => {
+    setBookings(prev =>
+      prev.map(b => (b.id === bookingId ? { ...b, status: 'en_route' as BookingStatus } : b))
+    );
+    setNotifications(prev => [
+      {
+        id: `notif-${Date.now()}`,
+        title: 'Worker En Route',
+        message: `Artisan has departed and is en route to customer location.`,
+        time: 'Just now',
+        read: false,
+        type: 'booking'
+      },
+      ...prev
+    ]);
+  };
+
+  const updateBookingStatus = (bookingId: string, status: BookingStatus) => {
+    setBookings(prev =>
+      prev.map(b => (b.id === bookingId ? { ...b, status } : b))
+    );
   };
 
   const startJob = (bookingId: string, enteredOtp: string) => {
@@ -433,6 +522,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
+  const pendingKycCount = workers.filter(w => w.kycStatus === 'pending').length;
 
   return (
     <AppContext.Provider
@@ -447,10 +537,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         aiInsights,
         notifications,
         unreadCount,
+        pendingKycCount,
+        isAuthenticated,
+        isGuest,
+        login,
+        logout,
         switchRole,
         setLanguage,
         createBooking,
         acceptBooking,
+        advanceJobToEnRoute,
+        updateBookingStatus,
         startJob,
         completeJob,
         cancelBooking,

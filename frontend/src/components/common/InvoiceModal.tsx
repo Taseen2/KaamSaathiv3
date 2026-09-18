@@ -1,6 +1,7 @@
 import React from 'react';
 import { Booking } from '../../types';
 import { X, Printer, ShieldCheck, CheckCircle } from 'lucide-react';
+import { formatINR } from '../../utils/currency';
 
 interface InvoiceModalProps {
   booking: Booking | null;
@@ -104,36 +105,36 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ booking, isOpen, onC
                   <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Cooperative Benchmark Labor Rate (95% to Worker)</div>
                 </td>
                 <td style={{ padding: '0.65rem 0.75rem', textAlign: 'center' }}>1</td>
-                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>₹{booking.pricing.baseRate}</td>
-                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>₹{booking.pricing.baseRate}</td>
+                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>{formatINR(booking.pricing.baseRate)}</td>
+                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>{formatINR(booking.pricing.baseRate)}</td>
               </tr>
               <tr>
                 <td style={{ padding: '0.65rem 0.75rem' }}>Artisan Local Conveyance Allowance</td>
                 <td style={{ padding: '0.65rem 0.75rem', textAlign: 'center' }}>1</td>
-                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>₹{booking.pricing.travelFee}</td>
-                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>₹{booking.pricing.travelFee}</td>
+                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>{formatINR(booking.pricing.travelFee)}</td>
+                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>{formatINR(booking.pricing.travelFee)}</td>
               </tr>
               <tr>
                 <td style={{ padding: '0.65rem 0.75rem', color: 'var(--primary)', fontWeight: 600 }}>
                   Worker Welfare & Group Accidental Insurance Reserve
                 </td>
                 <td style={{ padding: '0.65rem 0.75rem', textAlign: 'center' }}>1</td>
-                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>₹{booking.pricing.welfareFund}</td>
+                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>{formatINR(booking.pricing.welfareFund)}</td>
                 <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontWeight: 600, color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
-                  ₹{booking.pricing.welfareFund}
+                  {formatINR(booking.pricing.welfareFund)}
                 </td>
               </tr>
               <tr>
                 <td style={{ padding: '0.65rem 0.75rem' }}>Cooperative Registry & Administrative Upkeep (5%)</td>
                 <td style={{ padding: '0.65rem 0.75rem', textAlign: 'center' }}>1</td>
-                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>₹{booking.pricing.platformCess}</td>
-                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>₹{booking.pricing.platformCess}</td>
+                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>{formatINR(booking.pricing.platformCess)}</td>
+                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>{formatINR(booking.pricing.platformCess)}</td>
               </tr>
               <tr>
                 <td style={{ padding: '0.65rem 0.75rem' }}>Central & State GST (18%)</td>
                 <td style={{ padding: '0.65rem 0.75rem', textAlign: 'center' }}>-</td>
                 <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>18%</td>
-                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>₹{booking.pricing.gst}</td>
+                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>{formatINR(booking.pricing.gst)}</td>
               </tr>
             </tbody>
             <tfoot>
@@ -142,7 +143,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ booking, isOpen, onC
                   Total Settlement:
                 </td>
                 <td style={{ padding: '0.75rem', textAlign: 'right', color: 'var(--primary)', fontSize: '1.2rem', fontFamily: 'var(--font-mono)' }}>
-                  ₹{booking.pricing.total}
+                  {formatINR(booking.pricing.total)}
                 </td>
               </tr>
             </tfoot>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import type { Booking } from '../types';
+import { BookingStatusStepper } from '../components/common/BookingStatusStepper';
+import { formatINR } from '../utils/currency';
 import { 
   CalendarCheck, 
   Clock, 
@@ -9,9 +11,9 @@ import {
   ShieldCheck, 
   FileText, 
   Star, 
-  ArrowRight,
-  CheckCircle2,
-  AlertTriangle
+  ArrowRight, 
+  CheckCircle2, 
+  AlertTriangle 
 } from 'lucide-react';
 
 interface CustomerDashboardProps {
@@ -265,7 +267,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                   <div style={{ fontSize: '0.82rem' }}>
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Total Payable Amount</div>
                     <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
-                      ₹{booking.pricing.total}
+                      {formatINR(booking.pricing.total)}
                     </div>
                     <div style={{ fontSize: '0.74rem', color: 'var(--primary)' }}>
                       {booking.paymentStatus === 'paid_online' ? '✓ Paid Online (Razorpay)' : 'Cash upon Completion'}
@@ -273,31 +275,11 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                   </div>
                 </div>
 
-                {/* Progress tracker bar */}
-                <div style={{ margin: '1rem 0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '0.3rem', fontFamily: 'var(--font-mono)' }}>
-                    <span style={{ color: 'var(--primary)', fontWeight: 700 }}>1. Confirmed</span>
-                    <span style={{ color: booking.status === 'in_progress' || booking.status === 'completed' ? 'var(--primary)' : 'var(--text-muted)', fontWeight: 700 }}>
-                      2. Worker En Route
-                    </span>
-                    <span style={{ color: booking.status === 'in_progress' || booking.status === 'completed' ? 'var(--primary)' : 'var(--text-muted)', fontWeight: 700 }}>
-                      3. Service In Progress
-                    </span>
-                    <span style={{ color: booking.status === 'completed' ? 'var(--primary)' : 'var(--text-muted)', fontWeight: 700 }}>
-                      4. Completed
-                    </span>
-                  </div>
-                  <div style={{ width: '100%', height: '4px', backgroundColor: 'var(--bg-secondary)', borderRadius: '1px', overflow: 'hidden' }}>
-                    <div
-                      style={{
-                        height: '100%',
-                        backgroundColor: 'var(--primary)',
-                        width: booking.status === 'pending' ? '25%' : booking.status === 'confirmed' ? '50%' : booking.status === 'in_progress' ? '75%' : '100%',
-                        transition: 'width 0.3s ease'
-                      }}
-                    />
-                  </div>
-                </div>
+                {/* Synchronized 4-Stage Booking Stepper */}
+                <BookingStatusStepper
+                  status={booking.status}
+                  isEmergency={booking.isEmergency}
+                />
 
                 {/* Actions */}
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem' }}>

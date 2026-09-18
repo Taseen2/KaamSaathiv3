@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import type { WorkerProfile, ServiceCategory } from '../types';
 import heroWorkerImg from '../assets/cooperative_worker_hero.jpg';
+import { formatINR } from '../utils/currency';
 
 interface HomeProps {
   onSelectCategory: (categoryId: string) => void;
@@ -59,7 +60,7 @@ export const Home: React.FC<HomeProps> = ({
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '3.5rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* =====================================================================
           Hero Section: Left-aligned document structure paired with real worker photo
           ===================================================================== */}
@@ -67,7 +68,7 @@ export const Home: React.FC<HomeProps> = ({
         style={{
           backgroundColor: '#FAF7F0',
           borderBottom: '1px solid var(--border)',
-          padding: '3rem 0 3.5rem 0'
+          padding: '3.5rem 0'
         }}
       >
         <div className="container">
@@ -176,7 +177,7 @@ export const Home: React.FC<HomeProps> = ({
                   className="btn btn-accent"
                   style={{
                     flex: '0 0 auto',
-                    padding: '0.75rem 0.95rem',
+                    padding: '0.75rem 1.15rem',
                     fontSize: '0.88rem',
                     whiteSpace: 'nowrap'
                   }}
@@ -184,22 +185,6 @@ export const Home: React.FC<HomeProps> = ({
                 >
                   <span>{language === 'hi' ? 'कारीगर खोजें' : 'Book Worker'}</span>
                   <ArrowRight size={15} />
-                </button>
-
-                {/* Strict Distinct Saturated Red SOS Button (Principle 4) */}
-                <button
-                  onClick={onEmergencyClick}
-                  className="btn btn-sos"
-                  style={{
-                    flex: '0 0 auto',
-                    padding: '0.75rem 0.8rem',
-                    fontSize: '0.88rem',
-                    whiteSpace: 'nowrap'
-                  }}
-                  title="Priority 15-20 min emergency domestic response"
-                >
-                  <AlertTriangle size={15} />
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>24/7 SOS</span>
                 </button>
               </div>
 
@@ -320,7 +305,7 @@ export const Home: React.FC<HomeProps> = ({
                     Social Security: <strong>PM-SYM & ESI Active</strong>
                   </span>
                   <span style={{ color: 'var(--primary)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-                    Standard Rate: ₹250/hr
+                    Standard Rate: {formatINR(250)}/hr
                   </span>
                 </div>
               </div>
@@ -393,7 +378,14 @@ export const Home: React.FC<HomeProps> = ({
           Services Index Cards Section
           Index cards, 2-4px radius, thin hairline borders, hand-tool iconography
           ===================================================================== */}
-      <section className="container">
+      <section
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderBottom: '1px solid var(--border-light)',
+          padding: '3.5rem 0'
+        }}
+      >
+        <div className="container">
         <div style={{ marginBottom: '2rem', textAlign: 'left', borderBottom: '2px solid var(--primary)', paddingBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ fontSize: '0.72rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'var(--font-mono)', letterSpacing: '0.04em' }}>
@@ -460,16 +452,15 @@ export const Home: React.FC<HomeProps> = ({
                   >
                     {getCategoryIcon(cat.id)}
                   </div>
-                  {cat.popular && (
-                    <span className="seal-badge seal-govt" style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem' }}>
-                      High Demand
-                    </span>
-                  )}
-                  {cat.id === 'emergency' && (
+                  {cat.id === 'emergency' ? (
                     <span className="badge badge-emergency" style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem', fontFamily: 'var(--font-mono)' }}>
                       24/7 Priority
                     </span>
-                  )}
+                  ) : cat.popular ? (
+                    <span className="seal-badge seal-govt" style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem' }}>
+                      High Demand
+                    </span>
+                  ) : null}
                 </div>
 
                 <h3 style={{ fontSize: '1.1rem', marginBottom: '0.35rem', color: 'var(--text-primary)' }}>
@@ -494,7 +485,7 @@ export const Home: React.FC<HomeProps> = ({
                     Standard Base Rate
                   </div>
                   <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
-                    ₹{cat.basePrice}
+                    {formatINR(cat.basePrice)}
                   </div>
                 </div>
 
@@ -512,6 +503,7 @@ export const Home: React.FC<HomeProps> = ({
             </div>
           ))}
         </div>
+        </div>
       </section>
 
       {/* =====================================================================
@@ -520,7 +512,6 @@ export const Home: React.FC<HomeProps> = ({
       <section
         style={{
           backgroundColor: '#FAF7F0',
-          borderTop: '1px solid var(--border)',
           borderBottom: '1px solid var(--border)',
           padding: '3.5rem 0'
         }}
@@ -643,7 +634,13 @@ export const Home: React.FC<HomeProps> = ({
           Featured Cooperative Tradespeople Section
           Index card profiles, verified seals, rust orange booking actions
           ===================================================================== */}
-      <section className="container">
+      <section
+        style={{
+          backgroundColor: '#FFFFFF',
+          padding: '3.5rem 0'
+        }}
+      >
+        <div className="container">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem', borderBottom: '2px solid var(--primary)', paddingBottom: '0.75rem' }}>
           <div>
             <div style={{ fontSize: '0.72rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'var(--font-mono)', letterSpacing: '0.04em' }}>
@@ -697,9 +694,11 @@ export const Home: React.FC<HomeProps> = ({
                   />
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>{worker.name}</h4>
+                      <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, lineHeight: 1.2 }}>{worker.name}</h4>
                       {worker.kycStatus === 'verified' && (
-                        <CheckCircle2 size={15} color="var(--primary)" />
+                        <span title="Verified Cooperative Member" style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+                          <CheckCircle2 size={15} color="var(--primary)" />
+                        </span>
                       )}
                     </div>
                     <div style={{ fontSize: '0.78rem', color: 'var(--primary)', textTransform: 'capitalize', fontWeight: 600 }}>
@@ -708,7 +707,9 @@ export const Home: React.FC<HomeProps> = ({
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: '#8C6F19', marginTop: '0.1rem' }}>
                       <Star size={12} fill="#8C6F19" />
                       <span style={{ fontWeight: 700 }}>{worker.rating}</span>
-                      <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>({worker.reviewCount})</span>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>
+                        ({worker.completedJobs} {language === 'hi' ? 'कार्य' : 'jobs'} • {worker.reviewCount} {language === 'hi' ? 'समीक्षाएं' : 'reviews'})
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -756,7 +757,7 @@ export const Home: React.FC<HomeProps> = ({
                     Standard Rate
                   </div>
                   <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
-                    ₹{worker.hourlyRate}<span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>/hr</span>
+                    {formatINR(worker.hourlyRate)}<span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>/hr</span>
                   </div>
                 </div>
 
@@ -770,6 +771,7 @@ export const Home: React.FC<HomeProps> = ({
               </div>
             </div>
           ))}
+        </div>
         </div>
       </section>
 

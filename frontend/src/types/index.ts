@@ -47,7 +47,7 @@ export interface ServiceCategory {
   popular: boolean;
 }
 
-export type BookingStatus = 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
+export type BookingStatus = 'pending' | 'confirmed' | 'en_route' | 'in_progress' | 'completed' | 'cancelled';
 
 export interface PricingBreakdown {
   baseRate: number;

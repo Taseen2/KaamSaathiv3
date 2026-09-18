@@ -2,7 +2,12 @@ import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { Users, ShieldCheck, HeartHandshake, Award, FileText, CheckCircle2 } from 'lucide-react';
 
-export const Footer: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) => {
+interface FooterProps {
+  onNavigate: (tab: string) => void;
+  onEmergencyClick?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onNavigate, onEmergencyClick }) => {
   const { language } = useApp();
 
   return (
@@ -148,7 +153,13 @@ export const Footer: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavi
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('workers')} style={{ color: '#FCA5A5', fontWeight: 700, textAlign: 'left', fontFamily: 'var(--font-mono)' }}>
+                <button
+                  onClick={() => {
+                    if (onEmergencyClick) onEmergencyClick();
+                    else onNavigate('workers');
+                  }}
+                  style={{ color: '#FCA5A5', fontWeight: 700, textAlign: 'left', fontFamily: 'var(--font-mono)', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+                >
                   [SOS] 24/7 Priority Emergency Dispatch
                 </button>
               </li>

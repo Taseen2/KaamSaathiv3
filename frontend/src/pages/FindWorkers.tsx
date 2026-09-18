@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Navigation
 } from 'lucide-react';
+import { formatINR } from '../utils/currency';
 
 interface FindWorkersProps {
   initialCategory?: string;
@@ -89,17 +90,21 @@ export const FindWorkers: React.FC<FindWorkersProps> = ({
       <div style={{ marginBottom: '2rem', borderBottom: '2px solid var(--primary)', paddingBottom: '0.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
           <span className="stamp-official" style={{ fontSize: '0.7rem' }}>
-            <ShieldCheck size={12} /> GEO-VERIFIED COOPERATIVE ROSTER
+            <ShieldCheck size={12} /> {language === 'hi' ? 'भू-सत्यापित सहकारी रोस्टर' : 'GEO-VERIFIED COOPERATIVE ROSTER'}
           </span>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            Showing {filteredWorkers.length} affiliated tradespeople within {maxDistance} km
+            {language === 'hi'
+              ? `${maxDistance} किमी के दायरे में ${filteredWorkers.length} संबद्ध कामगार`
+              : `Showing ${filteredWorkers.length} affiliated tradespeople within ${maxDistance} km`}
           </span>
         </div>
         <h1 style={{ fontSize: '2rem', color: 'var(--primary)', marginTop: '0.35rem' }}>
-          Find Verified Cooperative Workers
+          {language === 'hi' ? 'सत्यापित सहकारी कारीगर खोजें' : 'Find Verified Cooperative Workers'}
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          Real-time OpenStreetMap dispatch. Directly matched based on proximity, craft trade, and verified society affiliation.
+          {language === 'hi'
+            ? 'ओपनस्ट्रीटमैप आधारित रीयल-टाइम प्रेषण। निकटता, शिल्प कौशल और सत्यापित सोसायटी संबद्धता से सीधा जुड़ाव।'
+            : 'Real-time OpenStreetMap dispatch. Directly matched based on proximity, craft trade, and verified society affiliation.'}
         </p>
       </div>
 
@@ -286,10 +291,12 @@ export const FindWorkers: React.FC<FindWorkersProps> = ({
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                            <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>{worker.name}</h3>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, lineHeight: 1.2 }}>{worker.name}</h3>
                             {worker.kycStatus === 'verified' && (
-                              <CheckCircle2 size={15} color="var(--primary)" />
+                              <span title="Verified Cooperative Member" style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+                                <CheckCircle2 size={15} color="var(--primary)" />
+                              </span>
                             )}
                           </div>
                           <div style={{ fontSize: '0.78rem', color: 'var(--primary)', textTransform: 'capitalize', fontWeight: 600 }}>
@@ -324,7 +331,9 @@ export const FindWorkers: React.FC<FindWorkersProps> = ({
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', color: '#8C6F19' }}>
                           <Star size={11} fill="#8C6F19" />
                           <span style={{ fontWeight: 700 }}>{worker.rating}</span>
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>({worker.reviewCount})</span>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
+                            ({worker.completedJobs} {language === 'hi' ? 'कार्य' : 'jobs'} • {worker.reviewCount} {language === 'hi' ? 'समीक्षाएं' : 'reviews'})
+                          </span>
                         </div>
                       </div>
 
@@ -358,7 +367,7 @@ export const FindWorkers: React.FC<FindWorkersProps> = ({
                             Coop Rate
                           </div>
                           <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
-                            ₹{worker.hourlyRate}<span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>/hr</span>
+                            {formatINR(worker.hourlyRate)}<span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>/hr</span>
                           </div>
                         </div>
 

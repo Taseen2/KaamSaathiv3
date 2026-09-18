@@ -5,9 +5,10 @@
      ========================================================================== */
 
   /* Typography */
-  --font-heading: 'PT Serif', 'IBM Plex Sans Devanagari', Georgia, serif;
+  --font-heading: 'PT Serif', 'IBM Plex Sans Devanagari', 'IBM Plex Sans', Georgia, serif;
   --font-body: 'IBM Plex Sans', 'IBM Plex Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --font-mono: 'IBM Plex Mono', 'IBM Plex Sans', 'Segoe UI', monospace;
+  --font-currency: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
 
   /* Official Cooperative Color Palette */
   --primary: #1C3D2E;             /* Deep cooperative green (institutional) */

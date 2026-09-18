@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import type { Booking, WorkerProfile } from '../types';
+import { BookingStatusStepper } from '../components/common/BookingStatusStepper';
+import { formatINR } from '../utils/currency';
 import { 
   Power, 
   ShieldCheck, 
@@ -8,24 +10,43 @@ import {
   Phone, 
   CheckCircle2, 
   AlertCircle, 
-  Lock,
-  Award,
-  Wallet,
-  Building2,
-  FileCheck
+  Lock, 
+  Award, 
+  Wallet, 
+  Building2, 
+  FileCheck,
+  Clock
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const WorkerDashboard: React.FC = () => {
-  const { workers, bookings, toggleWorkerDuty, startJob, completeJob } = useApp();
+  const { workers, bookings, toggleWorkerDuty, startJob, completeJob, advanceJobToEnRoute, language, t } = useApp();
 
   // Current active worker (Ramesh Kumar Verma)
   const worker: WorkerProfile = workers[0];
 
   // Bookings assigned to this worker
   const myBookings: Booking[] = bookings.filter((b: Booking) => b.workerId === worker.id);
-  const activeJobs: Booking[] = myBookings.filter((b: Booking) => b.status === 'confirmed' || b.status === 'in_progress');
+  const activeJobs: Booking[] = myBookings.filter((b: Booking) => b.status === 'confirmed' || b.status === 'en_route' || b.status === 'in_progress');
   const completedJobsList: Booking[] = myBookings.filter((b: Booking) => b.status === 'completed');
+
+  // Single source of truth for completed member services: worker.completedJobs
+  const totalCompletedServices = worker.completedJobs;
+
+  // Active in-progress amounts (e.g. Job #KS-BK-9021 worth ₹494 direct artisan share)
+  const pendingArtisanShare = activeJobs.reduce((acc: number, b: Booking) => acc + Math.round(b.pricing.total * 0.95), 0);
+  const pendingUpkeep = activeJobs.reduce((acc: number, b: Booking) => acc + Math.round(b.pricing.total * 0.05), 0);
+  const pendingWelfare = activeJobs.reduce((acc: number, b: Booking) => acc + b.pricing.welfareFund, 0);
+
+  // Financial calculations for worker (Cooperative Model)
+  // Baseline earned payout computed from worker.completedJobs @ worker.hourlyRate plus newly completed jobs in session
+  const lifetimeGrossBase = totalCompletedServices * (worker.hourlyRate || 350);
+  const sessionCompletedGross = completedJobsList.reduce((acc: number, b: Booking) => acc + b.pricing.baseRate + b.pricing.travelFee, 0);
+  const totalCompletedGross = lifetimeGrossBase + sessionCompletedGross;
+
+  const cooperativeUpkeep = Math.round(totalCompletedGross * 0.05); // 5% upkeep
+  const netEarnings = totalCompletedGross - cooperativeUpkeep; // 95% take-home
+  const welfareContributed = (totalCompletedServices * 20) + completedJobsList.reduce((acc: number, b: Booking) => acc + b.pricing.welfareFund, 0);
 
   // Local state for OTP verification input per booking
   const [otpInputs, setOtpInputs] = useState<{ [bookingId: string]: string }>({});
@@ -54,12 +75,6 @@ export const WorkerDashboard: React.FC = () => {
       origin: { y: 0.6 }
     });
   };
-
-  // Financial calculations for worker (Cooperative Model)
-  const totalCompletedGross = completedJobsList.reduce((acc: number, b: Booking) => acc + b.pricing.baseRate + b.pricing.travelFee, 0);
-  const cooperativeUpkeep = Math.round(totalCompletedGross * 0.05); // 5% upkeep
-  const netEarnings = totalCompletedGross - cooperativeUpkeep; // 95% take-home
-  const welfareContributed = completedJobsList.reduce((acc: number, b: Booking) => acc + b.pricing.welfareFund, 0);
 
   return (
     <div className="container" style={{ padding: '2.5rem 1.5rem', minHeight: '85vh' }}>
@@ -155,8 +170,13 @@ export const WorkerDashboard: React.FC = () => {
           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)', marginBottom: '0.25rem' }}>
             Net Livelihood Payout (95%)
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary)', fontFamily: 'var(--font-heading)' }}>
-            ₹{netEarnings.toLocaleString()}
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary)', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'baseline', gap: '0.4rem', flexWrap: 'wrap' }}>
+            <span>{formatINR(netEarnings)}</span>
+            {pendingArtisanShare > 0 && (
+              <span style={{ fontSize: '0.74rem', color: 'var(--accent)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                +{formatINR(pendingArtisanShare)} Pending
+              </span>
+            )}
           </div>
           <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
             Deposited directly to cooperative bank a/c
@@ -167,8 +187,13 @@ export const WorkerDashboard: React.FC = () => {
           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)', marginBottom: '0.25rem' }}>
             Federation Upkeep Cap (5%)
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-secondary)', fontFamily: 'var(--font-heading)' }}>
-            ₹{cooperativeUpkeep.toLocaleString()}
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-secondary)', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'baseline', gap: '0.4rem', flexWrap: 'wrap' }}>
+            <span>{formatINR(cooperativeUpkeep)}</span>
+            {pendingUpkeep > 0 && (
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                +{formatINR(pendingUpkeep)} pending
+              </span>
+            )}
           </div>
           <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
             Server & registry maintenance fee
@@ -179,8 +204,13 @@ export const WorkerDashboard: React.FC = () => {
           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)', marginBottom: '0.25rem' }}>
             Welfare Fund Pool
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--accent)', fontFamily: 'var(--font-heading)' }}>
-            ₹{welfareContributed.toLocaleString()}
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--accent)', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'baseline', gap: '0.4rem', flexWrap: 'wrap' }}>
+            <span>{formatINR(welfareContributed)}</span>
+            {pendingWelfare > 0 && (
+              <span style={{ fontSize: '0.74rem', color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>
+                +{formatINR(pendingWelfare)} pending
+              </span>
+            )}
           </div>
           <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
             ₹20/job pooled for health & emergency aid
@@ -192,10 +222,10 @@ export const WorkerDashboard: React.FC = () => {
             Completed Member Services
           </div>
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary)', fontFamily: 'var(--font-heading)' }}>
-            {completedJobsList.length}
+            {totalCompletedServices}
           </div>
           <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
-            Rating: {worker.rating} / 5.0 (Audited)
+            Rating: ★ {worker.rating} / 5.0 ({worker.reviewCount} Audited Reviews)
           </div>
         </div>
       </div>
@@ -251,10 +281,18 @@ export const WorkerDashboard: React.FC = () => {
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Direct Artisan Share</div>
                     <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
-                      ₹{Math.round(job.pricing.total * 0.95)}
+                      {formatINR(Math.round(job.pricing.total * 0.95))}
                     </div>
                   </div>
                 </div>
+
+                {/* Shared 4-Stage Synchronized Status Stepper */}
+                <BookingStatusStepper
+                  status={job.status}
+                  isEmergency={job.isEmergency}
+                  canManage={true}
+                  onAdvanceStatus={() => advanceJobToEnRoute(job.id)}
+                />
 
                 {/* Customer Details Box */}
                 <div
@@ -280,8 +318,8 @@ export const WorkerDashboard: React.FC = () => {
                   )}
                 </div>
 
-                {/* OTP Verification Desk to Start Work */}
-                {job.status === 'confirmed' && (
+                {/* OTP Verification Desk to Start Work (Available when confirmed or en_route) */}
+                {(job.status === 'confirmed' || job.status === 'en_route') && (
                   <div
                     style={{
                       backgroundColor: 'var(--surface)',
@@ -340,7 +378,7 @@ export const WorkerDashboard: React.FC = () => {
                 {job.status === 'in_progress' && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-light)', paddingTop: '0.75rem' }}>
                     <div style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>
-                      ✓ Job Verified & Started. Complete work to disburse compensation.
+                      ✓ Job Verified & Underway. Complete work to disburse fair compensation.
                     </div>
                     {/* Primary Action in Tool-belt Rust Orange */}
                     <button
@@ -359,10 +397,13 @@ export const WorkerDashboard: React.FC = () => {
 
       {/* Completed Services Passbook Record Table */}
       <div>
-        <div style={{ marginBottom: '1rem', borderBottom: '2px solid var(--primary)', paddingBottom: '0.5rem' }}>
+        <div style={{ marginBottom: '1rem', borderBottom: '2px solid var(--primary)', paddingBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: '1.4rem', color: 'var(--primary)' }}>
             Service Passbook Settlement History
           </h2>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            {totalCompletedServices} Audited Cooperative Member Records
+          </span>
         </div>
 
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border)', borderRadius: 'var(--radius-xs)', overflowX: 'auto' }}>
@@ -379,29 +420,40 @@ export const WorkerDashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {completedJobsList.length === 0 ? (
-                <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '2rem' }}>
-                    No completed settlements recorded in this cycle.
+              {completedJobsList.map((b: Booking) => (
+                <tr key={b.id}>
+                  <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>#{b.id}</td>
+                  <td>{b.date}</td>
+                  <td>{b.serviceName}</td>
+                  <td>{b.customerName}</td>
+                  <td style={{ fontFamily: 'var(--font-mono)' }}>{formatINR(b.pricing.total)}</td>
+                  <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--primary)' }}>
+                    {formatINR(Math.round(b.pricing.total * 0.95))}
+                  </td>
+                  <td>
+                    <span className="badge badge-verified">Settled to Bank</span>
                   </td>
                 </tr>
-              ) : (
-                completedJobsList.map((b: Booking) => (
-                  <tr key={b.id}>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>#{b.id}</td>
-                    <td>{b.date}</td>
-                    <td>{b.serviceName}</td>
-                    <td>{b.customerName}</td>
-                    <td style={{ fontFamily: 'var(--font-mono)' }}>₹{b.pricing.total}</td>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--primary)' }}>
-                      ₹{Math.round(b.pricing.total * 0.95)}
-                    </td>
-                    <td>
-                      <span className="badge badge-verified">Settled</span>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
+              {/* Prior Audited Cooperative Baseline Entries */}
+              <tr>
+                <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>#KS-BK-8812</td>
+                <td>2026-09-12</td>
+                <td>Domestic Wiring & MCB Fix</td>
+                <td>Vikram Mehra (DLF Ph 2)</td>
+                <td style={{ fontFamily: 'var(--font-mono)' }}>{formatINR(480)}</td>
+                <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--primary)' }}>{formatINR(456)}</td>
+                <td><span className="badge badge-verified">Settled</span></td>
+              </tr>
+              <tr>
+                <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>#KS-BK-8750</td>
+                <td>2026-09-08</td>
+                <td>Smart Meter Line Diagnostic</td>
+                <td>Anita Singhal (Saket)</td>
+                <td style={{ fontFamily: 'var(--font-mono)' }}>{formatINR(550)}</td>
+                <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--primary)' }}>{formatINR(522)}</td>
+                <td><span className="badge badge-verified">Settled</span></td>
+              </tr>
             </tbody>
           </table>
         </div>

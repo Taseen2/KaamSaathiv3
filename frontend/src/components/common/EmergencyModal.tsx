@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { WorkerProfile } from '../../types';
 import { AlertTriangle, Clock, PhoneCall, CheckCircle2, X, AlertOctagon } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { formatINR } from '../../utils/currency';
 
 interface EmergencyModalProps {
   isOpen: boolean;
@@ -176,7 +177,7 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({ isOpen, onClose,
               {/* Rate */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.88rem', borderTop: '1px solid var(--border-light)', paddingTop: '0.75rem' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>Statutory Emergency Benchmark Rate:</span>
-                <span style={{ fontWeight: 700, fontSize: '1.2rem', color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>₹399</span>
+                <span style={{ fontWeight: 700, fontSize: '1.2rem', color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>{formatINR(399)}</span>
               </div>
 
               <button

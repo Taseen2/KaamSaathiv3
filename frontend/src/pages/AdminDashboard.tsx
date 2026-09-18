@@ -15,6 +15,7 @@ import {
   FileText
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { formatINR } from '../utils/currency';
 
 export const AdminDashboard: React.FC = () => {
   const { workers, stats, aiInsights, categories, verifyWorker, t } = useApp();
@@ -73,7 +74,7 @@ export const AdminDashboard: React.FC = () => {
             <div style={{ padding: '0.6rem 1rem', background: 'var(--surface)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border)', textAlign: 'center' }}>
               <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Welfare Reserve Fund</div>
               <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>
-                ₹{stats.welfareFundBalance.toLocaleString()}
+                {formatINR(stats.welfareFundBalance)}
               </div>
             </div>
 
@@ -438,9 +439,9 @@ export const AdminDashboard: React.FC = () => {
                 {categories.map((c: ServiceCategory) => (
                   <tr key={c.id}>
                     <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{c.name}</td>
-                    <td style={{ color: 'var(--primary)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>₹{c.basePrice}</td>
-                    <td style={{ color: 'var(--primary)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>₹{Math.round(c.basePrice * 0.95)}</td>
-                    <td style={{ color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>₹20 / booking</td>
+                    <td style={{ color: 'var(--primary)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{formatINR(c.basePrice)}</td>
+                    <td style={{ color: 'var(--primary)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{formatINR(Math.round(c.basePrice * 0.95))}</td>
+                    <td style={{ color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>{formatINR(20)} / booking</td>
                     <td style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>National Labour Cooperative Gazette 2024</td>
                   </tr>
                 ))}

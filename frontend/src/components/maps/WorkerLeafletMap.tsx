@@ -44,14 +44,19 @@ export const WorkerLeafletMap: React.FC<WorkerLeafletMapProps> = ({
         attributionControl: false
       });
 
-      // OpenStreetMap tiles (CartoDB Positron / Voyager — clear civic map)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      // Free OpenStreetMap Standard Tiles (No API key required, crisp civic rendering)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        subdomains: 'abcd'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
 
       markersGroupRef.current = L.layerGroup().addTo(map);
       mapInstanceRef.current = map;
+
+      // Handle container resize
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 250);
     }
 
     return () => {

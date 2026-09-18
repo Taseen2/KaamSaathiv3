@@ -15,6 +15,7 @@ import {
   Building2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { formatINR } from '../../utils/currency';
 
 interface BookingModalProps {
   worker: WorkerProfile;
@@ -305,31 +306,31 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
                   <span>{t('booking.baseRate')}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>₹{baseRate}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>{formatINR(baseRate)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
                   <span>{t('booking.travelCess')}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>₹{travelFee}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>{formatINR(travelFee)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--primary)', fontWeight: 600 }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                     {t('booking.welfareFund')} <span title="Directly credited to worker medical & accident safety reserve"><Info size={11} /></span>
                   </span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>₹{welfareFund}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>{formatINR(welfareFund)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
                   <span>{t('booking.platformFee')} (Strict 5% upkeep cap)</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>₹{platformCess}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>{formatINR(platformCess)}</span>
                 </div>
                 {isEmergency && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--sos-red)' }}>
                     <span>Emergency Priority Rapid Surcharge</span>
-                    <span style={{ fontFamily: 'var(--font-mono)' }}>₹{emergencyFee}</span>
+                    <span style={{ fontFamily: 'var(--font-mono)' }}>{formatINR(emergencyFee)}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.76rem' }}>
                   <span>{t('booking.gst')} (Statutory 18%)</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>₹{gst}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>{formatINR(gst)}</span>
                 </div>
                 <div
                   style={{
@@ -344,7 +345,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   }}
                 >
                   <span>{t('booking.total')}</span>
-                  <span style={{ color: 'var(--primary)', fontFamily: 'var(--font-mono)', fontSize: '1.15rem' }}>₹{total}</span>
+                  <span style={{ color: 'var(--primary)', fontFamily: 'var(--font-mono)', fontSize: '1.15rem' }}>{formatINR(total)}</span>
                 </div>
               </div>
 
@@ -406,7 +407,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 className="btn btn-accent btn-lg"
                 style={{ width: '100%', marginTop: '0.25rem' }}
               >
-                {t('booking.confirmBtn')} • ₹{total}
+                {t('booking.confirmBtn')} • {formatINR(total)}
               </button>
             </div>
           )}
